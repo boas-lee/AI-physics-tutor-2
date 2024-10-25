@@ -1,10 +1,6 @@
-
 # coding: utf-8
 
-
-
 import streamlit as st
-from streamlit_chat import message
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage, AIMessage
 import os
@@ -49,22 +45,18 @@ else:
     st.title('🧲💥📡🌈 AI 물리 톡봇 👨‍🏫')
     st.header(' 물리에 대해서 물어보세요!')
 
-    # ChatOpenAI 설정 (max_tokens, top_p, n 설정 추가)
+    # ChatOpenAI 설정
     llm = ChatOpenAI(
-        model_name='gpt-4o-mini',  # gpt-4o-mini 사용
+        model_name='gpt-4o-mini',  # 유효한 모델 이름 사용
         temperature=0.0, 
-        max_tokens=4*2048,  # 최대 토큰 수 설정
-        model_kwargs={"top_p": 0.5},  # top_p를 model_kwargs로 설정
-        n=1                 # 한 번에 하나의 응답 생성
+        max_tokens=4*1024,  # 최대 토큰 수 설정
+        top_p=0.5,        # top_p 직접 설정
+        n=1               # 한 번에 하나의 응답 생성
     )
 
     # 세션 상태에서 대화 기록 관리
     if 'history' not in st.session_state:
         st.session_state['history'] = []
-
-    # 입력창에서 질문 유지하기 위한 상태 변수
-    if 'user_input' not in st.session_state:
-        st.session_state['user_input'] = ''
 
     # 대화 생성 함수
     def conversational_chat(query):
@@ -92,9 +84,6 @@ else:
             message_obj = st.session_state['history'][i]
             time_now = datetime.now().strftime("%H:%M")  # 현재 시간 기록
             if isinstance(message_obj, HumanMessage):
-                avatar_style = "adventurer"
-                is_user = True
-                key = f"user_{i}"
                 # 사용자 입력 내용 배경색 변경 (파란색) + 시간 추가 + 오른쪽 정렬
                 st.markdown(
                     f"""
@@ -103,9 +92,6 @@ else:
                     </div>
                     """, unsafe_allow_html=True)
             elif isinstance(message_obj, AIMessage):
-                avatar_style = "adventurer-neutral"
-                is_user = False
-                key = f"ai_{i}"
                 # AI 답변 내용 배경색 변경 (주황색) + 시간 추가 + 왼쪽 정렬
                 st.markdown(
                     f"""
@@ -117,39 +103,27 @@ else:
     # 대화 입력 및 전송 버튼을 form으로 처리하여 엔터 키로도 전송 가능
     with st.container():
         with st.form(key='chat_form', clear_on_submit=True):
-            st.session_state['user_input'] = st.text_input("질문을 입력하세요:", st.session_state['user_input'], placeholder="무엇이든 물어보세요!")
+            user_input = st.text_input("질문을 입력하세요:", placeholder="무엇이든 물어보세요!")
             submit_button = st.form_submit_button(label='Send')
+            if submit_button and user_input:
+                output = conversational_chat(user_input)
 
-    if submit_button and st.session_state['user_input']:
-        user_message = st.session_state['user_input']
-        output = conversational_chat(user_message)
-
-        # 출력창에 질문과 답변 표시
-        with response_container:
-            time_now = datetime.now().strftime("%H:%M")
-            # 학생 입력 내용을 오른쪽에 배치
-            st.markdown(
-                f"""
-                <div style="background-color: #D4F1F4; padding: 10px; border-radius: 5px; text-align: right;">
-                    🧑‍🎓 학생 ({time_now}): {user_message}
-                </div>
-                """, unsafe_allow_html=True)
-            # AI 답변 내용을 왼쪽에 배치
-            st.markdown(
-                f"""
-                <div style="background-color: #FFE5B4; padding: 10px; border-radius: 5px; text-align: left;">
-                    👨‍🏫 AI 튜터 ({time_now}): {output}
-                </div>
-                """, unsafe_allow_html=True)
-
-        # 질문 입력란을 초기화
-        st.session_state['user_input'] = ''
-
-
-
-
-
-#!pip freeze > requirements.txt
+                # 질문과 답변 표시
+                time_now = datetime.now().strftime("%H:%M")
+                # 학생 입력 내용을 오른쪽에 배치
+                st.markdown(
+                    f"""
+                    <div style="background-color: #D4F1F4; padding: 10px; border-radius: 5px; text-align: right;">
+                        🧑‍🎓 학생 ({time_now}): {user_input}
+                    </div>
+                    """, unsafe_allow_html=True)
+                # AI 답변 내용을 왼쪽에 배치
+                st.markdown(
+                    f"""
+                    <div style="background-color: #FFE5B4; padding: 10px; border-radius: 5px; text-align: left;">
+                        👨‍🏫 AI 튜터 ({time_now}): {output}
+                    </div>
+                    """, unsafe_allow_html=True)
 
 
 
