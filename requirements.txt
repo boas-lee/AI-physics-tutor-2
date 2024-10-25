@@ -1,5 +1,5 @@
-streamlit==1.25.0  # Streamlit 최신 버전
-streamlit_chat==0.0.3  # Streamlit 채팅 인터페이스 라이브러리
-langchain==0.0.158  # LangChain을 사용한 LLM 관련 라이브러리
-openai==0.27.8  # OpenAI API 라이브러리
+streamlit>=1.25.0
+langchain>=0.0.296
+openai>=0.28.0
+
 python-dotenv==1.0.0  # 환경 변수를 로드하기 위한 라이브러리
