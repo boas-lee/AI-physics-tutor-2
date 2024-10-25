@@ -1,7 +1,6 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
-# In[1]:
 
 
 import streamlit as st
@@ -148,13 +147,11 @@ else:
 
 
 
-# In[1]:
 
 
 #!pip freeze > requirements.txt
 
 
-# In[ ]:
 
 
 
